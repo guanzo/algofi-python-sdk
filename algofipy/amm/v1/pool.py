@@ -101,7 +101,7 @@ class Pool:
             self.swap_fee = pool_state[POOL_STRINGS.swap_fee_pct_scaled_var] / 1e6
 
             # additionally save down nanoswap metadata if applicable
-            if self.pool_type == PoolType.NANOSWAP:
+            if self.is_nanoswap:
                 self.initial_amplification_factor = pool_state.get(POOL_STRINGS.initial_amplification_factor, 0)
                 self.future_amplification_factor = pool_state.get(POOL_STRINGS.future_amplification_factor, 0)
                 self.initial_amplification_factor_time = pool_state.get(POOL_STRINGS.initial_amplification_factor_time, 0)
@@ -119,7 +119,7 @@ class Pool:
         """Refresh the metadata of the pool (e.g. if now initialized).
         """
 
-        if self.pool_type != PoolType.NANOSWAP:
+        if not self.is_nanoswap:
             try:
                 logic_sig_local_state = get_local_state_at_app(self.indexer, self.logic_sig.address(), self.manager_application_id)
                 self.pool_status = PoolStatus.ACTIVE
@@ -562,6 +562,10 @@ class Pool:
         return TransactionGroup([txn0] + group_transaction.transactions + [txn1])
 
     @property
+    def is_nanoswap(self):
+        return self.pool_type == PoolType.NANOSWAP or self.pool_type == PoolType.NANOSWAP_LENDING_POOL
+
+    @property
     def amplification_factor(self):
         if self.t < self.future_amplification_factor_time:
             return int(self.initial_amplification_factor +
@@ -662,7 +666,7 @@ class Pool:
 
 
         if (swap_in_asset_id == self.asset1.asset_id):
-            if self.pool_type == PoolType.NANOSWAP:
+            if self.is_nanoswap:
                 D, num_iter_D = get_D([self.asset1_balance, self.asset2_balance], self.amplification_factor)
                 y, num_iter_y = get_y(0, 1, self.asset1_balance + swap_in_amount_less_fees, [self.asset1_balance, self.asset2_balance], D, self.amplification_factor)
                 swap_out_amount = self.asset2_balance - y
@@ -672,7 +676,7 @@ class Pool:
                 num_iter = 0
             return BalanceDelta(self, -1 * swap_in_amount, swap_out_amount, 0, num_iter)
         else:
-            if self.pool_type == PoolType.NANOSWAP:
+            if self.is_nanoswap:
                 D, num_iter_D = get_D([self.asset1_balance, self.asset2_balance], self.amplification_factor)
                 y, num_iter_y = get_y(1, 0, self.asset2_balance + swap_in_amount_less_fees, [self.asset1_balance, self.asset2_balance], D, self.amplification_factor)
                 swap_out_amount = self.asset1_balance - y
