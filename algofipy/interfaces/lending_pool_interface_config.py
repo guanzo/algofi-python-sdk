@@ -33,6 +33,8 @@ LENDING_POOL_INTERFACE_CONFIGS = {
         LendingPoolInterfaceConfig(856198764, 1, 841126810, 855717054, 818179346, 841145020, 856183130, 855716333, PoolType.CONSTANT_PRODUCT_25BP_FEE_LENDING_POOL ,841189050), # bALGO / bSTBL2
         LendingPoolInterfaceConfig(870281048, 386192725, 841126810, 870151164, 818183964, 841145020, 870271921, 870150391, PoolType.CONSTANT_PRODUCT_25BP_FEE_LENDING_POOL ,841189050), # bgoBTC / bSTBL2
         LendingPoolInterfaceConfig(870281567, 386195940, 841126810, 870150187, 818188286, 841145020, 870275741, 870143131, PoolType.CONSTANT_PRODUCT_25BP_FEE_LENDING_POOL ,841189050), # bgoETH / bSTBL2
+        LendingPoolInterfaceConfig(900930380, 841126810, 900652777, 900924035, 841145020, 900883415, 0, 900923609, PoolType.CONSTANT_PRODUCT_25BP_FEE_LENDING_POOL, 841189050), # bSTBL2 / bBANK ( has no LP market this is a dummy)
+        LendingPoolInterfaceConfig(919954173, 1, 31566704, 919950894, 818179346, 818182048, 0, 919950071, PoolType.CONSTANT_PRODUCT_25BP_FEE_LENDING_POOL, 841189050), # bALGO / bUSDC ( has no LP market this is a dummy)
     ],
     Network.TESTNET: [
         LendingPoolInterfaceConfig(104532133, 104194013, 104210500, 104228491, 104207076, 104213311, 104238373, 104228342, PoolType.NANOSWAP, 104240608), # bUSDC / bSTBL2
@@ -55,7 +57,7 @@ class LENDING_POOL_INTERFACE_STRINGS:
   b_asset1_id = "b_asset1_id"
   b_asset2_id = "b_asset2_id"
   lp_asset_id = "lp_asset_id"
-  
+
   pool_step_1 = "pool_step_1"
   pool_step_2 = "pool_step_2"
   pool_step_3 = "pool_step_3"
@@ -74,6 +76,6 @@ class LENDING_POOL_INTERFACE_STRINGS:
   swap_step_3 = "swap_step_3"
   swap_step_4 = "swap_step_4"
   swap_step_5 = "swap_step_5"
-    
+
   swap_for_exact = "swap_for_exact"
   swap_exact_for = "swap_exact_for"

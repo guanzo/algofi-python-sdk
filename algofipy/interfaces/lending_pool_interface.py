@@ -42,19 +42,23 @@ class LendingPoolInterface:
         # load markets, pool, and lp market
         self.market1 = algofi_client.lending.markets[self.market1_app_id]
         self.market2 = algofi_client.lending.markets[self.market2_app_id]
-        self.lp_market = algofi_client.lending.markets[self.lp_market_app_id]
+        if self.lp_market_app_id:
+            self.lp_market = algofi_client.lending.markets[self.lp_market_app_id]
+        else:
+            self.lp_market = None
         self.pool = Pool(
             algofi_client.amm,
             config.pool_type,
             Asset(self.algofi_client.amm, self.market1.b_asset_id),
             Asset(self.algofi_client.amm, self.market2.b_asset_id)
         )
-    
+
     def load_state(self):
         # refresh markets + pool
         self.market1.load_state()
         self.market2.load_state()
-        self.lp_market.load_state()
+        if self.lp_market:
+            self.lp_market.load_state()
         self.pool.refresh_state()
 
     def get_pool_quote(self, asset_id, amount):
@@ -83,10 +87,10 @@ class LendingPoolInterface:
             lps_issued = pool_quote.lp_delta
             num_iter = pool_quote.num_iter
 
-        return BalanceDelta(self.pool, -1 * asset1_pooled_amount, -1 * asset2_pooled_amount, lps_issued, num_iter)       
+        return BalanceDelta(self.pool, -1 * asset1_pooled_amount, -1 * asset2_pooled_amount, lps_issued, num_iter)
 
     def get_burn_quote(self, amount):
-        
+
         pool_burn_quote = self.pool.get_burn_quote(amount)
         b_asset1_burned_amount = pool_burn_quote.asset1_delta
         b_asset2_burned_amount = pool_burn_quote.asset2_delta
@@ -95,7 +99,7 @@ class LendingPoolInterface:
         asset2_burned_amount = self.market2.b_asset_to_asset_amount(b_asset2_burned_amount).underlying
 
         return BalanceDelta(self.pool, asset1_burned_amount, asset2_burned_amount, -1 * amount, num_iter)
-    
+
     def get_swap_exact_for_quote(self, swap_in_asset_id, swap_in_amount):
 
         if swap_in_asset_id == self.market1.underlying_asset_id:
@@ -112,9 +116,9 @@ class LendingPoolInterface:
             b_asset1_swap_amount = pool_quote.asset1_delta
             asset1_swap_amount = self.market1.b_asset_to_asset_amount(b_asset1_swap_amount).underlying
             num_iter = pool_quote.num_iter
-        
+
         return BalanceDelta(self.pool, asset1_swap_amount, asset2_swap_amount, 0, num_iter)
-    
+
     def get_swap_for_exact_quote(self, swap_out_asset_id, swap_out_amount):
 
         if swap_out_asset_id == self.market1.underlying_asset_id:
@@ -131,7 +135,7 @@ class LendingPoolInterface:
             b_asset1_swap_amount = pool_quote.asset1_delta
             asset1_swap_amount = self.market1.b_asset_to_asset_amount(b_asset1_swap_amount).underlying
             num_iter = pool_quote.num_iter
-        
+
         return BalanceDelta(self.pool, asset1_swap_amount, asset2_swap_amount, 0, num_iter)
 
     def get_pool_txns(self, user, quote, maximum_slippage, add_to_user_collateral=False, params=None):
@@ -247,7 +251,7 @@ class LendingPoolInterface:
         )
 
         return TransactionGroup([txn0, txn1, txn2, txn3, txn4, txn5, txn6, txn7, txn8])
-        
+
     def get_burn_txns(self, user, quote, params=None):
 
         if params is None:
@@ -285,7 +289,7 @@ class LendingPoolInterface:
             foreign_assets=[self.pool.asset1.asset_id, self.pool.asset2.asset_id, self.pool.lp_asset_id]
         )
 
-        # burn step 3 
+        # burn step 3
         params.fee = 0
         txn3 = ApplicationNoOpTxn(
             sender=PERMISSIONLESS_SENDER_LOGIC_SIG.address(),
@@ -314,7 +318,7 @@ class LendingPoolInterface:
         )
 
         return TransactionGroup([txn0, txn1, txn2, txn3, txn4])
-    
+
     def get_swap_txns(self, user, quote, max_slippage, is_swap_for_exact=False, params=None):
 
         if params is None:
@@ -326,13 +330,13 @@ class LendingPoolInterface:
         input_asset = self.market1.underlying_asset_id if input_is_asset1 else self.market2.underlying_asset_id
         input_amount = -1 * quote.asset1_delta if input_is_asset1 else -1 * quote.asset2_delta
         min_b_asset_output_amount = floor(self.market2.underlying_to_b_asset(quote.asset2_delta) if input_is_asset1 else self.market1.underlying_to_b_asset(quote.asset1_delta))
-        
+
         if is_swap_for_exact:
             input_amount = ceil(input_amount * (1 + max_slippage)) # for fixed output, slippage is applied on input
             additional_permisionless_fee += 7_000 # for is_swap_for_exact swaps the additional_permisionless_fee must be increased by ~7_000
         else:
             min_b_asset_output_amount = floor(min_b_asset_output_amount * (1 - max_slippage)) # for fixed input, slippage is applied on output
-        
+
         txn0 = get_payment_txn(user.address, params, self.address, input_amount, input_asset)
 
         # swap step 1

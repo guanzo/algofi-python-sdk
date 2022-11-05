@@ -49,7 +49,8 @@ LENDING_POOLS_ASSET_PAIR_TO_APP_ID = {
     (818179690, 841157954): 855716333,
     (818184214, 841157954): 870150391,
     (818188553, 841157954): 870143131,
-    (841157954, 900919286): 900923609
+    (841157954, 900919286): 900923609,
+    (818179690, 818182311): 919950071,
 }
 # lending pool manager app ids
 # (asset1_id, asset2_id) -> manager_app_id
@@ -58,7 +59,8 @@ LENDING_POOLS_ASSET_PAIR_TO_MANAGER_APP_ID = {
     (818179690, 841157954): 841165954,
     (818184214, 841157954): 841165954,
     (818188553, 841157954): 841165954,
-    (841157954, 900919286): 841165954
+    (841157954, 900919286): 841165954,
+    (818179690, 818182311): 841165954,
 }
 
 class PoolType(Enum):
@@ -142,7 +144,7 @@ def get_clear_state_program():
 MAINNET_USDC_ASSET_ID = 31566704
 TESTNET_USDC_ASSET_ID = 51435943
 def get_usdc_asset_id(network):
-    
+
     """Gets asset id of USDC for a given network
 
     :param network: network :class:`Network` ("testnet" or "mainnet")
