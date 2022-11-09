@@ -1,6 +1,7 @@
 # IMPORTS
 
 # external
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from math import floor, ceil
 from algosdk import logic
 from algosdk.future.transaction import ApplicationNoOpTxn, LogicSigAccount
@@ -55,11 +56,17 @@ class LendingPoolInterface:
 
     def load_state(self):
         # refresh markets + pool
-        self.market1.load_state()
-        self.market2.load_state()
-        if self.lp_market:
-            self.lp_market.load_state()
-        self.pool.refresh_state()
+        with ThreadPoolExecutor() as e:
+            futures = [
+                e.submit(self.market1.load_state),
+                e.submit(self.market2.load_state),
+                e.submit(self.pool.refresh_state),
+            ]
+            if self.lp_market:
+                futures.append(e.submit(self.lp_market.load_state))
+
+            for future in as_completed(futures):
+                future.result()
 
     def get_pool_quote(self, asset_id, amount):
 
