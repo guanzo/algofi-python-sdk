@@ -167,7 +167,7 @@ class Pool:
             self.address = get_application_address(self.application_id)
             self.created_at_round = self.indexer.applications(self.application_id)[
                 "application"
-            ]["created-at-round"]
+            ].get("created-at-round")
             # save down pool metadata
             pool_state = get_global_state(self.indexer, self.application_id)
             self.lp_asset_id = pool_state[POOL_STRINGS.lp_id]
