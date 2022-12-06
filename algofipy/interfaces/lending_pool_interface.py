@@ -89,16 +89,16 @@ class LendingPoolInterface:
             Asset(self.algofi_client.amm, self.market2.b_asset_id),
         )
 
-    def load_state(self):
+    def load_state(self, block=None):
         # refresh markets + pool
         with ThreadPoolExecutor() as e:
             futures = [
-                e.submit(self.market1.load_state),
-                e.submit(self.market2.load_state),
-                e.submit(self.pool.refresh_state),
+                e.submit(self.market1.load_state, block),
+                e.submit(self.market2.load_state, block),
+                e.submit(self.pool.load_state, block),
             ]
             if self.lp_market:
-                futures.append(e.submit(self.lp_market.load_state))
+                futures.append(e.submit(self.lp_market.load_state, block))
 
             for future in as_completed(futures):
                 future.result()
