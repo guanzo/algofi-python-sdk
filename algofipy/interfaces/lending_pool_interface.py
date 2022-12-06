@@ -93,12 +93,12 @@ class LendingPoolInterface:
         # refresh markets + pool
         with ThreadPoolExecutor() as e:
             futures = [
-                e.submit(self.market1.load_state, block),
-                e.submit(self.market2.load_state, block),
-                e.submit(self.pool.load_state, block),
+                e.submit(self.market1.load_state, block=block),
+                e.submit(self.market2.load_state, block=block),
+                e.submit(self.pool.load_state, block=block),
             ]
             if self.lp_market:
-                futures.append(e.submit(self.lp_market.load_state, block))
+                futures.append(e.submit(self.lp_market.load_state, block=block))
 
             for future in as_completed(futures):
                 future.result()

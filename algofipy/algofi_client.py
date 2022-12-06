@@ -1,6 +1,7 @@
 # IMPORTS
 
 # external
+from concurrent.futures import ThreadPoolExecutor
 from algosdk.v2client.indexer import IndexerClient
 
 # local
@@ -38,20 +39,27 @@ class AlgofiClient:
         # assets
         self.assets = ASSET_CONFIGS[self.network]
 
-        # lending
-        self.lending = LendingClient(self)
+        with ThreadPoolExecutor() as e:
+            lendingFuture = e.submit(LendingClient, self)
+            stakingFuture = e.submit(StakingClient, self)
+            ammFuture = e.submit(AMMClient, self)
+            interfaceFuture = e.submit(InterfaceClient, self)
+            governanceFuture = e.submit(GovernanceClient, self)
 
-        # staking
-        self.staking = StakingClient(self)
+            # lending
+            self.lending = lendingFuture.result()
 
-        # amm
-        self.amm = AMMClient(self)
+            # staking
+            self.staking = stakingFuture.result()
 
-        # interfaces
-        self.interfaces = InterfaceClient(self)
+            # amm
+            self.amm = ammFuture.result()
 
-        # governance
-        self.governance = GovernanceClient(self)
+            # interfaces
+            self.interfaces = interfaceFuture.result()
+
+            # governance
+            self.governance = governanceFuture.result()
 
     def get_user(self, address):
         """Creates an :class:`AlgofiUser` object for specific address

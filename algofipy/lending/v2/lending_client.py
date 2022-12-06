@@ -1,5 +1,7 @@
 # IMPORTS
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 # external
 from typing import List
 from base64 import b64encode, b64decode
@@ -37,8 +39,16 @@ class LendingClient:
 
         self.manager = Manager(self, self.manager_config)
         self.markets = {}
-        for market_config in self.market_configs:
-            self.markets[market_config.app_id] = Market(self, market_config)
+
+        with ThreadPoolExecutor() as e:
+            futureToAppId = {
+                e.submit(Market, self, market_config): market_config.app_id
+                for market_config in self.market_configs
+            }
+
+            for future in as_completed(futureToAppId):
+                appId = futureToAppId[future]
+                self.markets[appId] = future.result()
 
     def load_state(self, block=None):
         """Function to update the state of the lending client markets"""

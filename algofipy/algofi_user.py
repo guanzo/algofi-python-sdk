@@ -1,6 +1,7 @@
 # IMPORTS
 
 # global
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from .lending.v2.lending_user import LendingUser
 from .staking.v2.staking_user import StakingUser
 from .governance.v1.governance_user import GovernanceUser
@@ -46,16 +47,19 @@ class AlgofiUser:
             if block
             else self.algofi_client.indexer
         )
-        self.balances = get_balances(indexer, self.address, block=block)
 
-        # lending
-        self.lending.load_state(block=block)
+        with ThreadPoolExecutor() as e:
+            futures = [
+                e.submit(self.lending.load_state, block=block),
+                e.submit(self.staking.load_state, block=block),
+                e.submit(self.governance.load_state, block=block),
+            ]
+            balancesFuture = e.submit(get_balances, indexer, self.address, block=block)
 
-        # staking
-        self.staking.load_state(block=block)
+            for future in as_completed(futures):
+                future.result()
 
-        # goverannce
-        self.governance.load_state(block=block)
+            self.balances = balancesFuture.result()
 
     def is_opted_in_to_asset(self, asset_id):
         """Checks if user is opted is into a given asset

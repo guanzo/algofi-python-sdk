@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from .staking_config import STAKING_CONFIGS, rewards_manager_app_id, STAKING_STRINGS
 from .staking import Staking
 from .staking_user import StakingUser
@@ -18,12 +19,18 @@ class StakingClient:
         self.load_state()
 
     def load_state(self, block=None):
-        for staking_config in self.staking_configs:
-            self.staking_contracts[staking_config.app_id] = Staking(
-                self, rewards_manager_app_id[self.network], staking_config
-            )
-            self.staking_contracts[staking_config.app_id].load_state(block=block)
+        with ThreadPoolExecutor() as e:
+            futures = []
+            for staking_config in self.staking_configs:
+                self.staking_contracts[staking_config.app_id] = Staking(
+                    self, rewards_manager_app_id[self.network], staking_config
+                )
+                contract = self.staking_contracts[staking_config.app_id]
+                futures.append(e.submit(contract.load_state, block=block))
 
+            for future in as_completed(futures):
+                future.result()
+                
     def get_user(self, address):
         return StakingUser(self, address)
 
