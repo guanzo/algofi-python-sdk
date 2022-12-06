@@ -47,15 +47,15 @@ class AlgofiClient:
 
             # lending
             self.lending = lendingFuture.result()
-            
-            # InterfaceClient depends on self.lending
+
+            # amm
+            self.amm = ammFuture.result()
+
+            # InterfaceClient depends on lending & amm
             interfaceFuture = e.submit(InterfaceClient, self)
 
             # staking
             self.staking = stakingFuture.result()
-
-            # amm
-            self.amm = ammFuture.result()
 
             # interfaces
             self.interfaces = interfaceFuture.result()
