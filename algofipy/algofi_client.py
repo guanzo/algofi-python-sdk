@@ -43,11 +43,13 @@ class AlgofiClient:
             lendingFuture = e.submit(LendingClient, self)
             stakingFuture = e.submit(StakingClient, self)
             ammFuture = e.submit(AMMClient, self)
-            interfaceFuture = e.submit(InterfaceClient, self)
-            governanceFuture = e.submit(GovernanceClient, self)
+            #governanceFuture = e.submit(GovernanceClient, self)
 
             # lending
             self.lending = lendingFuture.result()
+            
+            # InterfaceClient depends on self.lending
+            interfaceFuture = e.submit(InterfaceClient, self)
 
             # staking
             self.staking = stakingFuture.result()
@@ -59,7 +61,7 @@ class AlgofiClient:
             self.interfaces = interfaceFuture.result()
 
             # governance
-            self.governance = governanceFuture.result()
+            #self.governance = governanceFuture.result()
 
     def get_user(self, address):
         """Creates an :class:`AlgofiUser` object for specific address

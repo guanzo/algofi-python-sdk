@@ -19,7 +19,7 @@ from ...utils import int_to_bytes, bytes_to_int
 
 
 class LendingUser:
-    def __init__(self, lending_client, address):
+    def __init__(self, lending_client, address, load_state=True):
         """An object that encapsulates user state on the lending protocol
         and creates transactions representing user actions
 
@@ -35,7 +35,8 @@ class LendingUser:
         self.historical_indexer = self.lending_client.historical_indexer
         self.address = address
 
-        self.load_state()
+        if load_state:
+            self.load_state()
 
     def load_state(self, block=None):
         """Populates user state from the blockchain on the object

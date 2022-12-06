@@ -25,13 +25,13 @@ class AlgofiUser:
         self.address = address
 
         # lending
-        self.lending = LendingUser(self.algofi_client.lending, self.address)
+        self.lending = LendingUser(self.algofi_client.lending, self.address, load_state=False)
 
         # staking
         self.staking = StakingUser(self.algofi_client.staking, self.address)
 
         # governance
-        self.governance = GovernanceUser(self.algofi_client.governance, self.address)
+        #self.governance = GovernanceUser(self.algofi_client.governance, self.address)
 
         self.load_state()
 
@@ -52,7 +52,7 @@ class AlgofiUser:
             futures = [
                 e.submit(self.lending.load_state, block=block),
                 e.submit(self.staking.load_state, block=block),
-                e.submit(self.governance.load_state, block=block),
+                #e.submit(self.governance.load_state, block=block),
             ]
             balancesFuture = e.submit(get_balances, indexer, self.address, block=block)
 
