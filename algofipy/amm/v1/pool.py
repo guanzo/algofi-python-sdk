@@ -337,7 +337,7 @@ class Pool:
         :rtype: :class:`SignedTransaction`
         """
         assert (
-            self.pool_type != PoolType.NANOSWAP
+            (self.pool_type != PoolType.NANOSWAP) and (self.pool_type != PoolType.NANOSWAP_LENDING_POOL)
         ), "Nanoswap pools are not compatible with manager logic sigs"
         return LogicSigTransaction(transaction, self.logic_sig)
 
@@ -349,7 +349,7 @@ class Pool:
         :return: unsigned CreatePool transaction with given sender
         :rtype: :class:`ApplicationCreateTxn`
         """
-        if self.pool_type == PoolType.NANOSWAP:
+        if (self.pool_type == PoolType.NANOSWAP) and (self.pool_type != PoolType.NANOSWAP_LENDING_POOL):
             raise Exception("Nanoswap pool creation is not supported")
 
         if self.pool_status == PoolStatus.ACTIVE:
@@ -812,7 +812,7 @@ class Pool:
         :rtype: :class:`BalanceDelta`
         """
 
-        if self.pool_type == PoolType.NANOSWAP:
+        if (self.pool_type == PoolType.NANOSWAP) or (self.pool_type == PoolType.NANOSWAP_LENDING_POOL):
             lps_issued, num_iter = get_D(
                 [asset2_pooled_amount, asset2_pooled_amount], self.amplification_factor
             )
@@ -858,7 +858,7 @@ class Pool:
                 asset2_pooled_amount * self.asset1_balance // self.asset2_balance
             )
 
-        if self.pool_type == PoolType.NANOSWAP:
+        if (self.pool_type == PoolType.NANOSWAP) or (self.pool_type == PoolType.NANOSWAP_LENDING_POOL):
             D0, num_iter_D0 = get_D(
                 [self.asset1_balance, self.asset2_balance], self.amplification_factor
             )
