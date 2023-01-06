@@ -1,7 +1,12 @@
 
 # IMPORTS
 from algosdk import logic
-from algosdk.future.transaction import PaymentTxn, ApplicationNoOpTxn, AssetTransferTxn, ApplicationCloseOutTxn
+from algosdk.transaction import (
+    PaymentTxn,
+    ApplicationNoOpTxn,
+    AssetTransferTxn,
+    ApplicationCloseOutTxn,
+)
 
 # INTERFACE
 from algofipy.governance.v1.governance_config import VOTING_ESCROW_STRINGS, ADMIN_STRINGS, PROPOSAL_FACTORY_STRINGS
@@ -54,7 +59,7 @@ class Admin:
         for app_object in proposal_factory_info["created-apps"]:
             self.proposals[app_object["id"]] = Proposal(self.governance_client, app_object["id"])
             self.proposals[app_object["id"]].load_state()
-    
+
     def get_update_user_vebank_txns(self, user_calling, user_updating):
         """ Constructs a series of transactions to update a target user's vebank.
 
@@ -79,7 +84,7 @@ class Admin:
         )
 
         return TransactionGroup([txn0])
-    
+
     def get_vote_txns(self, user, proposal, for_or_against):
         """Constructs a series of transactions to vote on a proposal.
 
@@ -95,7 +100,7 @@ class Admin:
 
         # update ve bank for user
         txn0 = self.get_update_user_vebank_txns(user, user)
-        
+
         params.fee = 2000
         txn1 = ApplicationNoOpTxn(
             sender=user.address,
@@ -226,7 +231,7 @@ class Admin:
         :type user_calling: :class:`AlgofiUser`
         :param user_closing_out: user who is closing out
         :type user_closing_out: :class:`AlgofiUser`
-        :param proposal: proposal being closed out of 
+        :param proposal: proposal being closed out of
         :type proposal: :class:`Proposal`
         :return: a series of transactions which will close out a target user from a proposal.
         :rtype: :class:`TransactionGroup`
@@ -283,11 +288,11 @@ class Admin:
             sp=params,
             index=self.admin_app_id,
             app_args=[bytes(ADMIN_STRINGS.set_not_open_to_delegation, "utf-8")],
-            accounts=[user.governance.user_admin_state.storage_address]   
+            accounts=[user.governance.user_admin_state.storage_address]
         )
 
         return TransactionGroup([txn0])
-    
+
     def get_create_proposal_txns(self, user, title, link):
         """Constructs a series of transactions to create a proposal.
 

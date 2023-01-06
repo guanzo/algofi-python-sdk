@@ -5,7 +5,13 @@ from algosdk.error import AlgodHTTPError
 from algosdk.v2client.algod import AlgodClient
 
 # local
-from algosdk.future.transaction import assign_group_id, PaymentTxn, AssetTransferTxn, LogicSig, LogicSigTransaction
+from algosdk.transaction import (
+    assign_group_id,
+    PaymentTxn,
+    AssetTransferTxn,
+    LogicSig,
+    LogicSigTransaction,
+)
 
 from .globals import ALGO_ASSET_ID
 
@@ -107,7 +113,7 @@ class TransactionGroup:
 
         for i, txn in enumerate(self.transactions):
             self.signed_transactions[i] = txn.sign(private_key)
-    
+
     def sign_with_private_keys(self, private_keys, is_logic_sig=None):
         """Signs the transactions with specified private key and saves to class state
         :param private_keys: private key of user

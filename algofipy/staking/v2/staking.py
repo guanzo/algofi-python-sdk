@@ -1,6 +1,10 @@
 from algosdk import logic
 from algosdk.encoding import encode_address
-from algosdk.future.transaction import ApplicationNoOpTxn, ApplicationOptInTxn, ApplicationCloseOutTxn
+from algosdk.transaction import (
+    ApplicationNoOpTxn,
+    ApplicationOptInTxn,
+    ApplicationCloseOutTxn,
+)
 from ...state_utils import get_global_state, format_prefix_state
 from ...transaction_utils import TransactionGroup, get_default_params, get_payment_txn
 from ...utils import int_to_bytes, bytes_to_int
@@ -112,7 +116,7 @@ class Staking:
         :param b_asset_amount: amount of bank asset to add to collateral
         :type b_asset_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing an opt in group transaction of size 3
         :rtype: :class:`TransactionGroup`
         """
@@ -144,7 +148,7 @@ class Staking:
         :param b_asset_amount: amount of bank asset to add to collateral
         :type b_asset_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing an opt in group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -172,7 +176,7 @@ class Staking:
         :param user: account for the sender
         :type user: :class:`StakingUser`
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a claim rewards group transaction.
         :rtype: :class:`TransactionGroup`
         """

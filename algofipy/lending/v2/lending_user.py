@@ -4,7 +4,8 @@ from base64 import b64decode
 
 from algosdk.encoding import encode_address
 # external
-from algosdk.future.transaction import ApplicationNoOpTxn
+from algosdk.transaction import ApplicationNoOpTxn
+
 # local
 from .lending_config import MANAGER_STRINGS
 from .user_market_state import UserMarketState
@@ -28,9 +29,9 @@ class LendingUser:
 
         self.lending_client = lending_client
         self.address = address
-        
+
         self.load_state()
-    
+
     def load_state(self, block=None):
         """Populates user state from the blockchain on the object
 
@@ -65,7 +66,7 @@ class LendingUser:
                 market_page = b64decode(storage_states[self.lending_client.manager.app_id].get(MANAGER_STRINGS.opted_in_markets_page_prefix + int_to_bytes(page_idx).decode().strip(), ''))
                 for market_offset in range(int(len(market_page)//8)):
                     self.opted_in_markets.append(bytes_to_int(market_page[market_offset*8:(market_offset+1)*8]))
-        
+
             for market_app_id in self.opted_in_markets:
                 # cache local state
                 if market_app_id in self.lending_client.markets:
@@ -73,7 +74,7 @@ class LendingUser:
                     market.load_state(block=block)
 
                     self.user_market_states[market_app_id] = UserMarketState(market, storage_states[market_app_id])
-                    
+
                     # total net values
                     user_market_state = self.user_market_states[market_app_id]
                     self.net_collateral += user_market_state.b_asset_collateral_underlying.usd
@@ -88,10 +89,10 @@ class LendingUser:
                 self.net_borrow_apr = dollar_totaled_borrow_apr / self.net_borrow
         else:
             self.opted_in_to_manager = False
-    
+
     def get_market_page_offset(self, market_app_id):
         """Helper function that returns the location of the by-market state for the user
-        
+
         :param market_app_id: the market app id for which the location is being calculated
         :type market_app_id: int
         :return: a tuple of page, offset ints
@@ -102,7 +103,7 @@ class LendingUser:
             if self.opted_in_markets[i] == market_app_id:
                 return int(i / 3), i % 3
         return 0, 0
-    
+
     def get_preamble_txns(self, params, target_market_app_id, sender_address=''):
         """Helper function that constructs a group representing the utility transactions
         that should precede some user calls to the algofi protocol markets
@@ -117,16 +118,16 @@ class LendingUser:
         """
 
         page_count = int((self.opted_in_market_count - 1) / 3) + 1
-        
+
         txns = []
 
         if not sender_address:
             sender_address = self.address
-        
+
         for page in range(page_count):
             app_args = [bytes(MANAGER_STRINGS.calculate_user_position, "utf-8"), int_to_bytes(page), int_to_bytes(target_market_app_id)]
             accounts = [self.storage_address]
             foreign_apps = self.opted_in_markets[page * 3 : (page + 1) * 3] + [self.lending_client.markets[market_app_id].oracle.app_id for market_app_id in self.opted_in_markets[page * 3 : (page + 1) * 3]]
             txns.append(ApplicationNoOpTxn(sender_address, params, self.lending_client.manager.app_id, app_args, accounts=accounts, foreign_apps=foreign_apps))
-        
+
         return TransactionGroup(txns)

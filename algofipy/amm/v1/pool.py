@@ -5,8 +5,16 @@
 import time
 import math
 from algosdk.logic import get_application_address
-from algosdk.future.transaction import LogicSigAccount, LogicSigTransaction, OnComplete, StateSchema, ApplicationCreateTxn, \
-    ApplicationOptInTxn, ApplicationNoOpTxn, OnComplete
+from algosdk.transaction import (
+    LogicSigAccount,
+    LogicSigTransaction,
+    OnComplete,
+    StateSchema,
+    ApplicationCreateTxn,
+    ApplicationOptInTxn,
+    ApplicationNoOpTxn,
+    OnComplete,
+)
 
 # local
 from .amm_config import PoolStatus, Network, get_validator_index, get_approval_program_by_pool_type, \
