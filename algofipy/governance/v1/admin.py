@@ -1,6 +1,6 @@
 # IMPORTS
 from algosdk import logic
-from algosdk.future.transaction import (
+from algosdk.transaction import (
     PaymentTxn,
     ApplicationNoOpTxn,
     AssetTransferTxn,
@@ -83,10 +83,8 @@ class Admin:
         )["account"]
         self.proposals = {}
         for app_object in proposal_factory_info["created-apps"]:
-            self.proposals[app_object["id"]] = Proposal(
-                self.governance_client, app_object["id"]
-            )
-            self.proposals[app_object["id"]].load_state(block=block)
+            self.proposals[app_object["id"]] = Proposal(self.governance_client, app_object["id"])
+            self.proposals[app_object["id"]].load_state()
 
     def get_update_user_vebank_txns(self, user_calling, user_updating):
         """Constructs a series of transactions to update a target user's vebank.
@@ -331,7 +329,7 @@ class Admin:
             sp=params,
             index=self.admin_app_id,
             app_args=[bytes(ADMIN_STRINGS.set_not_open_to_delegation, "utf-8")],
-            accounts=[user.governance.user_admin_state.storage_address],
+            accounts=[user.governance.user_admin_state.storage_address]
         )
 
         return TransactionGroup([txn0])

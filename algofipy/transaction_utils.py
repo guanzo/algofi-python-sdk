@@ -5,7 +5,7 @@ from algosdk.error import AlgodHTTPError
 from algosdk.v2client.algod import AlgodClient
 
 # local
-from algosdk.future.transaction import (
+from algosdk.transaction import (
     assign_group_id,
     PaymentTxn,
     AssetTransferTxn,
@@ -221,4 +221,4 @@ class TransactionGroup:
             raise Exception(str(e))
         if wait:
             return wait_for_confirmation(algod, txid)
-        return {"txid": txid}
+        return {'txid': txid}

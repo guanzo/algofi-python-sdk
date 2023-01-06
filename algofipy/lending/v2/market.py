@@ -2,7 +2,7 @@
 from base64 import b64decode
 
 from algosdk.encoding import encode_address
-from algosdk.future.transaction import ApplicationNoOpTxn
+from algosdk.transaction import ApplicationNoOpTxn
 from algosdk.logic import get_application_address
 
 from .lending_config import MARKET_STRINGS, MarketType
@@ -325,7 +325,7 @@ class Market:
         :param user: account for the sender
         :type user: :class:`LendingUser`
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`AssetTransferTxn` of underlying asset with 0 amount from user to self
         :rtype: :class:`AssetTransferTxn`
         """
@@ -345,7 +345,7 @@ class Market:
         :param user: account for the sender
         :type user: :class:`LendingUser`
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`AssetTransferTxn` of underlying asset with 0 amount from user to self
         :rtype: :class:`AssetTransferTxn`
         """
@@ -371,7 +371,7 @@ class Market:
         :param underlying_amount: amount of underlying asset to use in minting
         :type underlying_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a mint group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -415,7 +415,7 @@ class Market:
         :param underlying_amount: amount of underlying asset to add to collateral
         :type underlying_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing an add collateral group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -459,7 +459,7 @@ class Market:
         :param b_asset_amount: amount of bank asset to add to collateral
         :type b_asset_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing an add collateral group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -502,7 +502,7 @@ class Market:
         :param underlying_amount: amount of underlying asset to remove
         :type underlying_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a remove collateral group transaction
             of size (preamble_length + 1)
         :rtype: :class:`TransactionGroup`
@@ -548,7 +548,7 @@ class Market:
         :param b_asset_amount: amount of underlying asset to remove
         :type b_asset_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a remove collateral group transaction
         :rtype: :class:`TransactionGroup`
         """
@@ -590,7 +590,7 @@ class Market:
         :param b_asset_amount: amount of underlying asset to remove
         :type b_asset_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a burn group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -631,7 +631,7 @@ class Market:
         :param underlying_amount: amount to borrow
         :type underlying_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a borrow group transaction of size (preamble_length + 1)
         :rtype: :class:`TransactionGroup`
         """
@@ -674,7 +674,7 @@ class Market:
         :param underlying_amount: amount to repay
         :type underlying_amount: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a repay group transaction of size 2
         :rtype: :class:`TransactionGroup`
         """
@@ -729,7 +729,7 @@ class Market:
         :param: seize_collateral_market: market to seize collateral in
         :type seize_collateral_market: :class:`Market`
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a liquidate group transaction of size (preamble_length + 3)
         :rtype: :class:`TransactionGroup`
         """
@@ -795,7 +795,7 @@ class Market:
         :param program_index: specific program for which the rewards are being claimed
         :type program_index: int
         :param params: algod params
-        :type params: :class: `algosdk.future.transaction.SuggestedParams`
+        :type params: :class: `algosdk.transaction.SuggestedParams`
         :return: :class:`TransactionGroup` object representing a claim rewards group transaction of size 1
         :rtype: :class:`TransactionGroup`
         """

@@ -5,7 +5,7 @@ from base64 import b64decode
 from algosdk.encoding import encode_address
 
 # external
-from algosdk.future.transaction import ApplicationNoOpTxn
+from algosdk.transaction import ApplicationNoOpTxn
 
 # local
 from .lending_config import MANAGER_STRINGS
@@ -146,7 +146,7 @@ class LendingUser:
                 return int(i / 3), i % 3
         return 0, 0
 
-    def get_preamble_txns(self, params, target_market_app_id, sender_address=""):
+    def get_preamble_txns(self, params, target_market_app_id, sender_address=''):
         """Helper function that constructs a group representing the utility transactions
         that should precede some user calls to the algofi protocol markets
 
