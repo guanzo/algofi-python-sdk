@@ -17,7 +17,7 @@ from .governance.v1.governance_client import GovernanceClient
 
 
 class AlgofiClient:
-    def __init__(self, network, algod, indexer):
+    def __init__(self, network, algod, indexer, historical_indexer=None):
         """A client for the algofi protocol
 
         :param network: a network configuration key
@@ -32,7 +32,7 @@ class AlgofiClient:
         self.algod = algod
         self.indexer = indexer
         # load AlgoExplorer historical indexer
-        self.historical_indexer = IndexerClient(
+        self.historical_indexer = historical_indexer or IndexerClient(
             "", "https://indexer.algoexplorerapi.io/", headers={"User-Agent": "algosdk"}
         )
 
