@@ -117,7 +117,7 @@ def create_asset_transaction(
     )
 
 
-def wait_for_confirmation(algod, txid):
+def wait_for_confirmation(algod, txid, wait_rounds=1000):
     """Wait for confirmation from network for transaction with given id.
 
     :param algod: Algorand algod node
@@ -129,12 +129,17 @@ def wait_for_confirmation(algod, txid):
     """
 
     last_round = algod.status().get("last-round")
+    start_round = last_round
     txinfo = algod.pending_transaction_info(txid)
     while not (txinfo.get("confirmed-round") and txinfo.get("confirmed-round") > 0):
+        if last_round > start_round + wait_rounds:
+            raise Exception(f'Wait for txn id {txid} timed out')
+
         print("Waiting for confirmation")
         last_round += 1
         algod.status_after_block(last_round)
         txinfo = algod.pending_transaction_info(txid)
+
     txinfo["txid"] = txid
     return txinfo
 
